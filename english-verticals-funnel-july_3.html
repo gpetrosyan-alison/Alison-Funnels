@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>English Verticals Funnel — July</title>
+<style>
+  .viz-root {
+    color-scheme: light;
+    --surface-0:      #f4f3f0;
+    --surface-1:      #fcfcfb;
+    --surface-2:      #f0efec;
+    --border:         #e2e0da;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #82807a;
+    --misc:           #9b9990;
+
+    --c-homepage:  #2a78d6;  /* blue */
+    --c-categories:#eb6834;  /* orange */
+    --c-clp:       #1baf7a;  /* aqua — Course Landing Page */
+    --c-tag:       #eda100;  /* yellow */
+    --c-dashboard: #e87ba4;  /* magenta */
+    --c-diploma:   #008300;  /* green — destination */
+    --c-shop:      #4a3aa7;  /* violet */
+    --c-learning:  #a83279;  /* rose — Learning Environment */
+    --c-others:    #e34948;  /* red — uncategorized pages */
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .viz-root {
+      color-scheme: dark;
+      --surface-0:      #141413;
+      --surface-1:      #1a1a19;
+      --surface-2:      #212120;
+      --border:         #34322d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #8f8d84;
+      --misc:           #7c7a72;
+
+      --c-homepage:  #3987e5;
+      --c-categories:#d95926;
+      --c-clp:       #199e70;
+      --c-tag:       #c98500;
+      --c-dashboard: #d55181;
+      --c-diploma:   #008300;
+      --c-shop:      #9085e9;
+      --c-learning:  #ca4d98;
+      --c-others:    #e66767;
+    }
+  }
+  :root[data-theme="dark"] .viz-root {
+    color-scheme: dark;
+    --surface-0:      #141413;
+    --surface-1:      #1a1a19;
+    --surface-2:      #212120;
+    --border:         #34322d;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #8f8d84;
+    --misc:           #7c7a72;
+
+    --c-homepage:  #3987e5;
+    --c-categories:#d95926;
+    --c-clp:       #199e70;
+    --c-tag:       #c98500;
+    --c-dashboard: #d55181;
+    --c-diploma:   #008300;
+    --c-shop:      #9085e9;
+    --c-learning:  #ca4d98;
+    --c-others:    #e66767;
+  }
+
+  * { box-sizing: border-box; }
+  body { background: var(--surface-0); }
+  .viz-root {
+    background: var(--surface-0);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding: 20px 16px 32px;
+    max-width: 1320px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 19px; font-weight: 650; margin: 0 0 4px; letter-spacing: -0.01em; }
+  h2 { font-size: 14.5px; font-weight: 650; margin: 0 0 10px; }
+  .subtitle { font-size: 13px; color: var(--text-secondary); margin: 0 0 20px; }
+
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .stat-tile {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .stat-tile .num { font-size: 21px; font-weight: 650; letter-spacing: -0.01em; line-height: 1.15; }
+  .stat-tile .pct { font-size: 12.5px; font-weight: 500; color: var(--text-secondary); }
+  .stat-tile .lbl { font-size: 12px; color: var(--text-secondary); margin-top: 3px; line-height: 1.35; }
+  .stat-tile .sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; line-height: 1.4; }
+  .stat-tile.accent .num { color: var(--c-diploma); }
+  .stat-tile.warn .num { color: var(--c-others); }
+
+  .card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 16px 14px;
+  }
+  .two-col {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 14px;
+    margin: 16px 0;
+    align-items: stretch;
+  }
+  @media (max-width: 760px) {
+    .two-col { grid-template-columns: 1fr; }
+  }
+
+  table.paths { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  table.paths th {
+    text-align: left; font-weight: 600; color: var(--text-muted);
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em;
+    padding: 0 8px 6px 0; border-bottom: 1px solid var(--border);
+  }
+  table.paths td { padding: 7px 8px 7px 0; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.paths tr:last-child td { border-bottom: none; }
+  table.paths td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  table.paths td.rank { color: var(--text-muted); font-variant-numeric: tabular-nums; width: 18px; }
+  .path-chain { color: var(--text-primary); }
+  .path-chain .arrow { color: var(--text-muted); margin: 0 3px; }
+
+  .bar-row { display: flex; align-items: center; gap: 8px; margin: 7px 0; }
+  .bar-label { width: 128px; flex: none; font-size: 12px; color: var(--text-secondary); text-align: right; }
+  .bar-track { flex: 1; background: var(--surface-2); border-radius: 4px; height: 16px; position: relative; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; }
+  .bar-val { width: 76px; flex: none; font-size: 12px; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+  .bar-val b { font-weight: 650; }
+
+  .chart-scroll { overflow-x: auto; }
+  .chart-scroll svg { display: block; min-width: 760px; }
+  .col-label { font-size: 11px; fill: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .node-label { font-size: 11.5px; fill: var(--text-primary); pointer-events: none; }
+  .node-value { font-size: 10.5px; fill: var(--text-secondary); pointer-events: none; }
+  .node-rect { stroke: var(--surface-1); stroke-width: 1.5px; cursor: pointer; }
+  .link-path { cursor: pointer; transition: opacity 120ms ease; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 10px 16px; margin: 14px 4px 0; font-size: 12px; color: var(--text-secondary); }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-swatch { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+
+  .tooltip {
+    position: fixed; pointer-events: none;
+    background: var(--text-primary); color: var(--surface-1);
+    font-size: 12px; line-height: 1.4; padding: 7px 10px; border-radius: 7px;
+    max-width: 240px; opacity: 0; transform: translate(-50%, calc(-100% - 10px));
+    transition: opacity 100ms ease; z-index: 20; white-space: nowrap;
+  }
+  .tooltip.show { opacity: 1; }
+  .tooltip b { font-weight: 650; }
+
+  .footnote { font-size: 11.5px; color: var(--text-muted); margin-top: 12px; line-height: 1.55; }
+  .section-gap { margin-top: 22px; }
+</style>
+</head>
+<body>
+<div class="viz-root">
+  <h1>English Verticals Funnel &mdash; Path to &ldquo;Diploma in English&rdquo;</h1>
+  <p class="subtitle">July 2026 &middot; page groups visited before (and after) the first landing on the Diploma in English pages, GA4 session paths</p>
+
+  <div class="stat-row">
+    <div class="stat-tile">
+      <div class="num">16,219</div>
+      <div class="lbl">Total users</div>
+    </div>
+    <div class="stat-tile accent">
+      <div class="num">7,191 <span class="pct">(44.3%)</span></div>
+      <div class="lbl">Landed directly &mdash; no prior page in the session</div>
+    </div>
+    <div class="stat-tile">
+      <div class="num">3,516 <span class="pct">(21.7%)</span></div>
+      <div class="lbl">Started their session on the Homepage</div>
+      <div class="sub">38.9% of the 9,028 assisted (non&#8209;direct) users</div>
+    </div>
+    <div class="stat-tile warn">
+      <div class="num">2,476 <span class="pct">(15.3%)</span></div>
+      <div class="lbl">Went off our core pages at some point (hit an uncategorized &ldquo;Others&rdquo; page)</div>
+      <div class="sub">1,555 before reaching Diploma in English &middot; 1,229 after</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h2>Most common paths to the destination</h2>
+      <table class="paths">
+        <thead><tr><th></th><th>Path</th><th style="text-align:right">Users</th><th style="text-align:right">Share</th></tr></thead>
+        <tbody id="pathsBody"></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <h2>Where they go right after reaching it</h2>
+      <div id="nextPageBars"></div>
+      <p class="footnote" style="margin-top:10px">Of all 16,219 total users, 11,565 (71.3%) visited at least one more page afterward; 4,654 (28.7%) ended the session right at the Diploma in English page. Shares below are of those 11,565 who continued.</p>
+    </div>
+  </div>
+
+  <div class="card section-gap">
+    <h2 style="margin-bottom:2px">Path to conversion &mdash; step by step</h2>
+    <p class="subtitle" style="margin-bottom:14px">The 9,028 assisted users only (direct landers excluded, shown above). Full range of steps 1&ndash;10 &mdash; the maximum path length in this dataset &mdash; so every assisted user is represented at their actual step count, none folded or capped.</p>
+    <div class="chart-scroll">
+      <svg id="sankeyPre" width="2100" height="620" viewBox="0 0 2100 620"></svg>
+    </div>
+    <div class="legend" id="legendPre"></div>
+    <p class="footnote">Ribbons below 20 users are omitted for legibility (241 of 605 transitions shown, retaining 90.3% of assisted-path traffic). Careers, Certificate Courses, Diploma Courses, Hubs, Blog, Psychometrics and Resume Builder are grouped into &ldquo;Misc pages&rdquo; &mdash; each is a small fraction on its own. Node height reflects the shown ribbons.</p>
+  </div>
+
+  <div class="card section-gap">
+    <h2 style="margin-bottom:2px">What they do after reaching it</h2>
+    <p class="subtitle" style="margin-bottom:14px">All 16,219 total users &mdash; direct landers and assisted arrivals together &mdash; continuing on from a single Diploma in English checkpoint. 4,654 (28.7%) end their session there and don&rsquo;t appear past the first bar; the rest continue for up to 3 more pages.</p>
+    <div class="chart-scroll">
+      <svg id="sankeyPost" width="820" height="440" viewBox="0 0 820 440"></svg>
+    </div>
+    <div class="legend" id="legendPost"></div>
+    <p class="footnote">Ribbons below 20 users are omitted for legibility (125 of 180 transitions shown, retaining 98.1% of the traffic they represent). Same &ldquo;Misc pages&rdquo; grouping as above.</p>
+  </div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+(function() {
+  const sankeyDataPre = {"nodes": [{"id": "1|Tag", "step": 1, "label": "Tag", "value": 2277}, {"id": "2|Diploma in English", "step": 2, "label": "Diploma in English", "value": 2733}, {"id": "1|Homepage", "step": 1, "label": "Homepage", "value": 3516}, {"id": "2|Tag", "step": 2, "label": "Tag", "value": 1611}, {"id": "3|Diploma in English", "step": 3, "label": "Diploma in English", "value": 2114}, {"id": "1|Learning Environment", "step": 1, "label": "Learning Environment", "value": 706}, {"id": "2|Categories", "step": 2, "label": "Categories", "value": 1977}, {"id": "1|Categories", "step": 1, "label": "Categories", "value": 659}, {"id": "1|Others", "step": 1, "label": "Others", "value": 682}, {"id": "3|Tag", "step": 3, "label": "Tag", "value": 1083}, {"id": "4|Diploma in English", "step": 4, "label": "Diploma in English", "value": 1282}, {"id": "1|Course Landing Page", "step": 1, "label": "Course Landing Page", "value": 712}, {"id": "2|Learning Environment", "step": 2, "label": "Learning Environment", "value": 630}, {"id": "3|Learning Environment", "step": 3, "label": "Learning Environment", "value": 497}, {"id": "2|Homepage", "step": 2, "label": "Homepage", "value": 569}, {"id": "3|Categories", "step": 3, "label": "Categories", "value": 640}, {"id": "2|Course Landing Page", "step": 2, "label": "Course Landing Page", "value": 415}, {"id": "3|Homepage", "step": 3, "label": "Homepage", "value": 685}, {"id": "4|Tag", "step": 4, "label": "Tag", "value": 696}, {"id": "5|Diploma in English", "step": 5, "label": "Diploma in English", "value": 901}, {"id": "4|Learning Environment", "step": 4, "label": "Learning Environment", "value": 349}, {"id": "2|Others", "step": 2, "label": "Others", "value": 402}, {"id": "4|Categories", "step": 4, "label": "Categories", "value": 707}, {"id": "1|Misc pages", "step": 1, "label": "Misc pages", "value": 393}, {"id": "2|Dashboard", "step": 2, "label": "Dashboard", "value": 350}, {"id": "3|Course Landing Page", "step": 3, "label": "Course Landing Page", "value": 553}, {"id": "2|Misc pages", "step": 2, "label": "Misc pages", "value": 290}, {"id": "1|Dashboard", "step": 1, "label": "Dashboard", "value": 60}, {"id": "5|Tag", "step": 5, "label": "Tag", "value": 506}, {"id": "6|Diploma in English", "step": 6, "label": "Diploma in English", "value": 647}, {"id": "2|Shop", "step": 2, "label": "Shop", "value": 51}, {"id": "5|Homepage", "step": 5, "label": "Homepage", "value": 231}, {"id": "6|Tag", "step": 6, "label": "Tag", "value": 342}, {"id": "7|Diploma in English", "step": 7, "label": "Diploma in English", "value": 500}, {"id": "4|Homepage", "step": 4, "label": "Homepage", "value": 312}, {"id": "4|Dashboard", "step": 4, "label": "Dashboard", "value": 143}, {"id": "6|Categories", "step": 6, "label": "Categories", "value": 311}, {"id": "7|Tag", "step": 7, "label": "Tag", "value": 249}, {"id": "8|Diploma in English", "step": 8, "label": "Diploma in English", "value": 364}, {"id": "4|Course Landing Page", "step": 4, "label": "Course Landing Page", "value": 309}, {"id": "5|Categories", "step": 5, "label": "Categories", "value": 361}, {"id": "5|Learning Environment", "step": 5, "label": "Learning Environment", "value": 223}, {"id": "6|Homepage", "step": 6, "label": "Homepage", "value": 129}, {"id": "7|Learning Environment", "step": 7, "label": "Learning Environment", "value": 95}, {"id": "8|Homepage", "step": 8, "label": "Homepage", "value": 51}, {"id": "9|Categories", "step": 9, "label": "Categories", "value": 54}, {"id": "10|Diploma in English", "step": 10, "label": "Diploma in English", "value": 228}, {"id": "3|Others", "step": 3, "label": "Others", "value": 259}, {"id": "5|Course Landing Page", "step": 5, "label": "Course Landing Page", "value": 264}, {"id": "3|Dashboard", "step": 3, "label": "Dashboard", "value": 192}, {"id": "3|Misc pages", "step": 3, "label": "Misc pages", "value": 207}, {"id": "3|Shop", "step": 3, "label": "Shop", "value": 65}, {"id": "5|Others", "step": 5, "label": "Others", "value": 140}, {"id": "7|Others", "step": 7, "label": "Others", "value": 52}, {"id": "8|Misc pages", "step": 8, "label": "Misc pages", "value": 31}, {"id": "9|Tag", "step": 9, "label": "Tag", "value": 115}, {"id": "5|Dashboard", "step": 5, "label": "Dashboard", "value": 99}, {"id": "6|Misc pages", "step": 6, "label": "Misc pages", "value": 89}, {"id": "7|Categories", "step": 7, "label": "Categories", "value": 169}, {"id": "8|Tag", "step": 8, "label": "Tag", "value": 152}, {"id": "9|Diploma in English", "step": 9, "label": "Diploma in English", "value": 259}, {"id": "7|Homepage", "step": 7, "label": "Homepage", "value": 97}, {"id": "6|Course Landing Page", "step": 6, "label": "Course Landing Page", "value": 168}, {"id": "8|Course Landing Page", "step": 8, "label": "Course Landing Page", "value": 53}, {"id": "6|Dashboard", "step": 6, "label": "Dashboard", "value": 56}, {"id": "4|Misc pages", "step": 4, "label": "Misc pages", "value": 157}, {"id": "5|Misc pages", "step": 5, "label": "Misc pages", "value": 137}, {"id": "4|Others", "step": 4, "label": "Others", "value": 178}, {"id": "5|Shop", "step": 5, "label": "Shop", "value": 37}, {"id": "6|Others", "step": 6, "label": "Others", "value": 74}, {"id": "6|Learning Environment", "step": 6, "label": "Learning Environment", "value": 156}, {"id": "8|Others", "step": 8, "label": "Others", "value": 16}, {"id": "4|Shop", "step": 4, "label": "Shop", "value": 48}, {"id": "8|Categories", "step": 8, "label": "Categories", "value": 118}, {"id": "7|Misc pages", "step": 7, "label": "Misc pages", "value": 56}, {"id": "7|Course Landing Page", "step": 7, "label": "Course Landing Page", "value": 81}, {"id": "6|Shop", "step": 6, "label": "Shop", "value": 26}, {"id": "7|Dashboard", "step": 7, "label": "Dashboard", "value": 41}, {"id": "8|Dashboard", "step": 8, "label": "Dashboard", "value": 20}, {"id": "8|Learning Environment", "step": 8, "label": "Learning Environment", "value": 38}, {"id": "8|Shop", "step": 8, "label": "Shop", "value": 8}, {"id": "9|Learning Environment", "step": 9, "label": "Learning Environment", "value": 13}, {"id": "1|Shop", "step": 1, "label": "Shop", "value": 23}, {"id": "9|Course Landing Page", "step": 9, "label": "Course Landing Page", "value": 21}, {"id": "9|Dashboard", "step": 9, "label": "Dashboard", "value": 8}, {"id": "9|Homepage", "step": 9, "label": "Homepage", "value": 5}, {"id": "7|Shop", "step": 7, "label": "Shop", "value": 11}, {"id": "9|Others", "step": 9, "label": "Others", "value": 7}, {"id": "9|Misc pages", "step": 9, "label": "Misc pages", "value": 3}, {"id": "9|Shop", "step": 9, "label": "Shop", "value": 2}], "links": [{"source": "1|Tag", "target": "2|Diploma in English", "value": 1682}, {"source": "1|Homepage", "target": "2|Tag", "value": 1137}, {"source": "2|Tag", "target": "3|Diploma in English", "value": 952}, {"source": "1|Learning Environment", "target": "2|Diploma in English", "value": 289}, {"source": "1|Homepage", "target": "2|Categories", "value": 1496}, {"source": "2|Categories", "target": "3|Diploma in English", "value": 767}, {"source": "1|Categories", "target": "2|Diploma in English", "value": 246}, {"source": "1|Others", "target": "2|Diploma in English", "value": 215}, {"source": "2|Categories", "target": "3|Tag", "value": 619}, {"source": "3|Tag", "target": "4|Diploma in English", "value": 633}, {"source": "1|Course Landing Page", "target": "2|Diploma in English", "value": 142}, {"source": "1|Tag", "target": "2|Learning Environment", "value": 167}, {"source": "2|Learning Environment", "target": "3|Diploma in English", "value": 182}, {"source": "1|Categories", "target": "2|Tag", "value": 208}, {"source": "1|Homepage", "target": "2|Diploma in English", "value": 88}, {"source": "2|Tag", "target": "3|Learning Environment", "value": 201}, {"source": "3|Learning Environment", "target": "4|Diploma in English", "value": 171}, {"source": "1|Learning Environment", "target": "2|Homepage", "value": 260}, {"source": "2|Homepage", "target": "3|Categories", "value": 205}, {"source": "3|Categories", "target": "4|Diploma in English", "value": 276}, {"source": "1|Course Landing Page", "target": "2|Categories", "value": 115}, {"source": "1|Course Landing Page", "target": "2|Tag", "value": 127}, {"source": "1|Others", "target": "2|Learning Environment", "value": 79}, {"source": "2|Homepage", "target": "3|Tag", "value": 151}, {"source": "1|Tag", "target": "2|Course Landing Page", "value": 215}, {"source": "2|Course Landing Page", "target": "3|Tag", "value": 109}, {"source": "1|Tag", "target": "2|Categories", "value": 85}, {"source": "2|Homepage", "target": "3|Diploma in English", "value": 44}, {"source": "2|Categories", "target": "3|Homepage", "value": 215}, {"source": "3|Homepage", "target": "4|Tag", "value": 242}, {"source": "4|Tag", "target": "5|Diploma in English", "value": 419}, {"source": "3|Tag", "target": "4|Learning Environment", "value": 102}, {"source": "4|Learning Environment", "target": "5|Diploma in English", "value": 85}, {"source": "1|Homepage", "target": "2|Learning Environment", "value": 182}, {"source": "2|Learning Environment", "target": "3|Homepage", "value": 172}, {"source": "1|Homepage", "target": "2|Others", "value": 252}, {"source": "2|Others", "target": "3|Homepage", "value": 135}, {"source": "3|Homepage", "target": "4|Categories", "value": 300}, {"source": "4|Categories", "target": "5|Diploma in English", "value": 260}, {"source": "1|Categories", "target": "2|Course Landing Page", "value": 94}, {"source": "2|Course Landing Page", "target": "3|Categories", "value": 60}, {"source": "1|Misc pages", "target": "2|Diploma in English", "value": 61}, {"source": "2|Course Landing Page", "target": "3|Diploma in English", "value": 61}, {"source": "1|Misc pages", "target": "2|Categories", "value": 183}, {"source": "1|Course Landing Page", "target": "2|Learning Environment", "value": 164}, {"source": "2|Tag", "target": "3|Categories", "value": 117}, {"source": "3|Tag", "target": "4|Categories", "value": 113}, {"source": "1|Homepage", "target": "2|Dashboard", "value": 177}, {"source": "2|Dashboard", "target": "3|Categories", "value": 81}, {"source": "2|Categories", "target": "3|Course Landing Page", "value": 212}, {"source": "3|Course Landing Page", "target": "4|Diploma in English", "value": 98}, {"source": "2|Learning Environment", "target": "3|Tag", "value": 56}, {"source": "1|Others", "target": "2|Tag", "value": 73}, {"source": "1|Others", "target": "2|Categories", "value": 73}, {"source": "1|Others", "target": "2|Homepage", "value": 129}, {"source": "1|Homepage", "target": "2|Misc pages", "value": 126}, {"source": "2|Misc pages", "target": "3|Diploma in English", "value": 23}, {"source": "1|Misc pages", "target": "2|Tag", "value": 42}, {"source": "2|Homepage", "target": "3|Learning Environment", "value": 65}, {"source": "1|Learning Environment", "target": "2|Others", "value": 37}, {"source": "2|Others", "target": "3|Diploma in English", "value": 36}, {"source": "2|Others", "target": "3|Tag", "value": 50}, {"source": "2|Others", "target": "3|Categories", "value": 57}, {"source": "3|Categories", "target": "4|Tag", "value": 171}, {"source": "2|Tag", "target": "3|Course Landing Page", "value": 205}, {"source": "3|Course Landing Page", "target": "4|Tag", "value": 127}, {"source": "3|Course Landing Page", "target": "4|Categories", "value": 101}, {"source": "2|Misc pages", "target": "3|Categories", "value": 113}, {"source": "1|Course Landing Page", "target": "2|Homepage", "value": 53}, {"source": "4|Categories", "target": "5|Tag", "value": 218}, {"source": "5|Tag", "target": "6|Diploma in English", "value": 318}, {"source": "1|Learning Environment", "target": "2|Shop", "value": 30}, {"source": "1|Categories", "target": "2|Homepage", "value": 54}, {"source": "4|Learning Environment", "target": "5|Homepage", "value": 70}, {"source": "5|Homepage", "target": "6|Tag", "value": 87}, {"source": "6|Tag", "target": "7|Diploma in English", "value": 230}, {"source": "2|Dashboard", "target": "3|Diploma in English", "value": 41}, {"source": "3|Learning Environment", "target": "4|Homepage", "value": 118}, {"source": "4|Homepage", "target": "5|Tag", "value": 102}, {"source": "2|Dashboard", "target": "3|Learning Environment", "value": 44}, {"source": "3|Learning Environment", "target": "4|Dashboard", "value": 42}, {"source": "4|Dashboard", "target": "5|Diploma in English", "value": 27}, {"source": "1|Learning Environment", "target": "2|Dashboard", "value": 43}, {"source": "3|Course Landing Page", "target": "4|Learning Environment", "value": 125}, {"source": "5|Homepage", "target": "6|Categories", "value": 94}, {"source": "6|Categories", "target": "7|Tag", "value": 83}, {"source": "7|Tag", "target": "8|Diploma in English", "value": 183}, {"source": "3|Tag", "target": "4|Course Landing Page", "value": 149}, {"source": "4|Course Landing Page", "target": "5|Tag", "value": 77}, {"source": "2|Course Landing Page", "target": "3|Learning Environment", "value": 88}, {"source": "3|Learning Environment", "target": "4|Course Landing Page", "value": 41}, {"source": "2|Categories", "target": "3|Learning Environment", "value": 50}, {"source": "4|Homepage", "target": "5|Categories", "value": 119}, {"source": "5|Categories", "target": "6|Diploma in English", "value": 162}, {"source": "4|Homepage", "target": "5|Learning Environment", "value": 22}, {"source": "5|Learning Environment", "target": "6|Homepage", "value": 47}, {"source": "1|Others", "target": "2|Dashboard", "value": 64}, {"source": "3|Learning Environment", "target": "4|Tag", "value": 49}, {"source": "4|Tag", "target": "5|Learning Environment", "value": 63}, {"source": "5|Learning Environment", "target": "6|Diploma in English", "value": 58}, {"source": "1|Tag", "target": "2|Others", "value": 31}, {"source": "4|Categories", "target": "5|Homepage", "value": 58}, {"source": "3|Categories", "target": "4|Learning Environment", "value": 38}, {"source": "9|Categories", "target": "10|Diploma in English", "value": 54}, {"source": "1|Tag", "target": "2|Misc pages", "value": 48}, {"source": "2|Misc pages", "target": "3|Tag", "value": 39}, {"source": "2|Tag", "target": "3|Homepage", "value": 70}, {"source": "2|Dashboard", "target": "3|Homepage", "value": 36}, {"source": "1|Tag", "target": "2|Homepage", "value": 37}, {"source": "1|Course Landing Page", "target": "2|Dashboard", "value": 32}, {"source": "2|Dashboard", "target": "3|Others", "value": 42}, {"source": "3|Others", "target": "4|Diploma in English", "value": 36}, {"source": "1|Course Landing Page", "target": "2|Misc pages", "value": 44}, {"source": "4|Course Landing Page", "target": "5|Diploma in English", "value": 49}, {"source": "1|Others", "target": "2|Misc pages", "value": 26}, {"source": "1|Homepage", "target": "2|Course Landing Page", "value": 50}, {"source": "2|Course Landing Page", "target": "3|Homepage", "value": 26}, {"source": "3|Course Landing Page", "target": "4|Homepage", "value": 37}, {"source": "4|Tag", "target": "5|Course Landing Page", "value": 79}, {"source": "5|Course Landing Page", "target": "6|Diploma in English", "value": 45}, {"source": "2|Others", "target": "3|Dashboard", "value": 28}, {"source": "3|Dashboard", "target": "4|Tag", "value": 29}, {"source": "2|Dashboard", "target": "3|Tag", "value": 57}, {"source": "2|Learning Environment", "target": "3|Course Landing Page", "value": 61}, {"source": "2|Categories", "target": "3|Misc pages", "value": 36}, {"source": "3|Misc pages", "target": "4|Categories", "value": 79}, {"source": "3|Tag", "target": "4|Homepage", "value": 35}, {"source": "4|Homepage", "target": "5|Others", "value": 24}, {"source": "5|Others", "target": "6|Homepage", "value": 34}, {"source": "9|Tag", "target": "10|Diploma in English", "value": 115}, {"source": "4|Tag", "target": "5|Categories", "value": 64}, {"source": "2|Categories", "target": "3|Others", "value": 48}, {"source": "2|Tag", "target": "3|Misc pages", "value": 39}, {"source": "2|Others", "target": "3|Misc pages", "value": 41}, {"source": "4|Learning Environment", "target": "5|Course Landing Page", "value": 45}, {"source": "5|Course Landing Page", "target": "6|Categories", "value": 62}, {"source": "4|Categories", "target": "5|Course Landing Page", "value": 98}, {"source": "6|Misc pages", "target": "7|Categories", "value": 25}, {"source": "7|Categories", "target": "8|Tag", "value": 42}, {"source": "8|Tag", "target": "9|Diploma in English", "value": 130}, {"source": "2|Tag", "target": "3|Others", "value": 21}, {"source": "3|Others", "target": "4|Tag", "value": 36}, {"source": "4|Tag", "target": "5|Homepage", "value": 22}, {"source": "7|Homepage", "target": "8|Tag", "value": 41}, {"source": "2|Learning Environment", "target": "3|Dashboard", "value": 75}, {"source": "3|Dashboard", "target": "4|Categories", "value": 42}, {"source": "4|Categories", "target": "5|Learning Environment", "value": 25}, {"source": "5|Learning Environment", "target": "6|Course Landing Page", "value": 26}, {"source": "7|Learning Environment", "target": "8|Diploma in English", "value": 24}, {"source": "3|Homepage", "target": "4|Learning Environment", "value": 22}, {"source": "2|Others", "target": "3|Course Landing Page", "value": 22}, {"source": "5|Course Landing Page", "target": "6|Tag", "value": 65}, {"source": "2|Categories", "target": "3|Dashboard", "value": 26}, {"source": "4|Misc pages", "target": "5|Categories", "value": 49}, {"source": "3|Categories", "target": "4|Course Landing Page", "value": 74}, {"source": "4|Course Landing Page", "target": "5|Categories", "value": 53}, {"source": "6|Homepage", "target": "7|Tag", "value": 51}, {"source": "5|Categories", "target": "6|Course Landing Page", "value": 55}, {"source": "6|Course Landing Page", "target": "7|Categories", "value": 35}, {"source": "7|Categories", "target": "8|Diploma in English", "value": 86}, {"source": "1|Misc pages", "target": "2|Others", "value": 25}, {"source": "5|Categories", "target": "6|Tag", "value": 84}, {"source": "4|Learning Environment", "target": "5|Tag", "value": 40}, {"source": "5|Tag", "target": "6|Learning Environment", "value": 38}, {"source": "6|Learning Environment", "target": "7|Tag", "value": 31}, {"source": "3|Dashboard", "target": "4|Learning Environment", "value": 33}, {"source": "4|Learning Environment", "target": "5|Dashboard", "value": 37}, {"source": "6|Learning Environment", "target": "7|Diploma in English", "value": 38}, {"source": "1|Course Landing Page", "target": "2|Others", "value": 33}, {"source": "2|Others", "target": "3|Learning Environment", "value": 25}, {"source": "3|Learning Environment", "target": "4|Shop", "value": 29}, {"source": "5|Others", "target": "6|Diploma in English", "value": 20}, {"source": "2|Learning Environment", "target": "3|Shop", "value": 40}, {"source": "3|Shop", "target": "4|Learning Environment", "value": 21}, {"source": "6|Categories", "target": "7|Diploma in English", "value": 150}, {"source": "7|Homepage", "target": "8|Categories", "value": 34}, {"source": "8|Categories", "target": "9|Diploma in English", "value": 69}, {"source": "3|Tag", "target": "4|Misc pages", "value": 24}, {"source": "4|Misc pages", "target": "5|Tag", "value": 32}, {"source": "4|Course Landing Page", "target": "5|Learning Environment", "value": 61}, {"source": "6|Course Landing Page", "target": "7|Learning Environment", "value": 26}, {"source": "1|Misc pages", "target": "2|Course Landing Page", "value": 27}, {"source": "5|Misc pages", "target": "6|Categories", "value": 36}, {"source": "6|Homepage", "target": "7|Categories", "value": 42}, {"source": "2|Homepage", "target": "3|Dashboard", "value": 30}, {"source": "7|Course Landing Page", "target": "8|Diploma in English", "value": 27}, {"source": "2|Homepage", "target": "3|Others", "value": 48}, {"source": "3|Others", "target": "4|Homepage", "value": 48}, {"source": "6|Tag", "target": "7|Learning Environment", "value": 29}, {"source": "6|Tag", "target": "7|Categories", "value": 23}, {"source": "7|Misc pages", "target": "8|Tag", "value": 23}, {"source": "2|Course Landing Page", "target": "3|Dashboard", "value": 23}, {"source": "3|Homepage", "target": "4|Others", "value": 46}, {"source": "4|Misc pages", "target": "5|Diploma in English", "value": 21}, {"source": "4|Learning Environment", "target": "5|Categories", "value": 26}, {"source": "3|Others", "target": "4|Categories", "value": 46}, {"source": "5|Course Landing Page", "target": "6|Learning Environment", "value": 47}, {"source": "7|Tag", "target": "8|Categories", "value": 21}, {"source": "5|Tag", "target": "6|Course Landing Page", "value": 63}, {"source": "6|Course Landing Page", "target": "7|Tag", "value": 37}, {"source": "4|Others", "target": "5|Categories", "value": 22}, {"source": "4|Others", "target": "5|Diploma in English", "value": 20}, {"source": "2|Misc pages", "target": "3|Others", "value": 43}, {"source": "3|Others", "target": "4|Misc pages", "value": 40}, {"source": "6|Course Landing Page", "target": "7|Diploma in English", "value": 41}, {"source": "2|Misc pages", "target": "3|Course Landing Page", "value": 26}, {"source": "3|Course Landing Page", "target": "4|Misc pages", "value": 29}, {"source": "3|Learning Environment", "target": "4|Categories", "value": 24}, {"source": "4|Others", "target": "5|Homepage", "value": 38}, {"source": "2|Dashboard", "target": "3|Course Landing Page", "value": 21}, {"source": "3|Course Landing Page", "target": "4|Others", "value": 21}, {"source": "3|Homepage", "target": "4|Dashboard", "value": 30}, {"source": "4|Dashboard", "target": "5|Categories", "value": 27}, {"source": "3|Misc pages", "target": "4|Others", "value": 34}, {"source": "6|Misc pages", "target": "7|Tag", "value": 30}, {"source": "8|Homepage", "target": "9|Tag", "value": 33}, {"source": "3|Categories", "target": "4|Homepage", "value": 41}, {"source": "5|Learning Environment", "target": "6|Categories", "value": 20}, {"source": "5|Categories", "target": "6|Learning Environment", "value": 26}, {"source": "5|Tag", "target": "6|Categories", "value": 59}, {"source": "2|Dashboard", "target": "3|Misc pages", "value": 24}, {"source": "3|Misc pages", "target": "4|Tag", "value": 40}, {"source": "4|Categories", "target": "5|Others", "value": 24}, {"source": "5|Others", "target": "6|Categories", "value": 23}, {"source": "4|Learning Environment", "target": "5|Shop", "value": 22}, {"source": "6|Learning Environment", "target": "7|Homepage", "value": 33}, {"source": "8|Categories", "target": "9|Tag", "value": 35}, {"source": "4|Tag", "target": "5|Misc pages", "value": 29}, {"source": "2|Course Landing Page", "target": "3|Misc pages", "value": 25}, {"source": "3|Others", "target": "4|Dashboard", "value": 29}, {"source": "5|Learning Environment", "target": "6|Tag", "value": 22}, {"source": "1|Categories", "target": "2|Misc pages", "value": 21}, {"source": "3|Dashboard", "target": "4|Diploma in English", "value": 31}, {"source": "4|Others", "target": "5|Misc pages", "value": 33}, {"source": "5|Misc pages", "target": "6|Tag", "value": 48}, {"source": "2|Course Landing Page", "target": "3|Others", "value": 21}, {"source": "2|Learning Environment", "target": "3|Others", "value": 30}, {"source": "6|Categories", "target": "7|Course Landing Page", "value": 20}, {"source": "9|Course Landing Page", "target": "10|Diploma in English", "value": 21}, {"source": "6|Tag", "target": "7|Course Landing Page", "value": 41}, {"source": "4|Course Landing Page", "target": "5|Others", "value": 20}], "direct_entry": 7191, "total_assisted": 9028, "grand_total": 16219, "dropped_weight": 2648, "total_weight": 27318, "max_step": 10, "n_links_kept": 241, "n_links_total": 605};
+  const sankeyDataPost = {"nodes": [{"id": "0|Diploma in English", "step": 0, "label": "Diploma in English", "value": 16219}, {"id": "1|Learning Environment", "step": 1, "label": "Learning Environment", "value": 7197}, {"id": "2|Diploma in English", "step": 2, "label": "Diploma in English", "value": 2870}, {"id": "3|Learning Environment", "step": 3, "label": "Learning Environment", "value": 2770}, {"id": "1|Tag", "step": 1, "label": "Tag", "value": 1267}, {"id": "2|Dashboard", "step": 2, "label": "Dashboard", "value": 691}, {"id": "2|Shop", "step": 2, "label": "Shop", "value": 592}, {"id": "1|Dashboard", "step": 1, "label": "Dashboard", "value": 600}, {"id": "2|Homepage", "step": 2, "label": "Homepage", "value": 881}, {"id": "3|Tag", "step": 3, "label": "Tag", "value": 751}, {"id": "1|Others", "step": 1, "label": "Others", "value": 578}, {"id": "3|Categories", "step": 3, "label": "Categories", "value": 781}, {"id": "3|Diploma in English", "step": 3, "label": "Diploma in English", "value": 314}, {"id": "1|Course Landing Page", "step": 1, "label": "Course Landing Page", "value": 389}, {"id": "2|Others", "step": 2, "label": "Others", "value": 371}, {"id": "2|Tag", "step": 2, "label": "Tag", "value": 504}, {"id": "3|Others", "step": 3, "label": "Others", "value": 356}, {"id": "3|Dashboard", "step": 3, "label": "Dashboard", "value": 288}, {"id": "2|Course Landing Page", "step": 2, "label": "Course Landing Page", "value": 613}, {"id": "1|Homepage", "step": 1, "label": "Homepage", "value": 442}, {"id": "2|Learning Environment", "step": 2, "label": "Learning Environment", "value": 599}, {"id": "1|Categories", "step": 1, "label": "Categories", "value": 785}, {"id": "3|Homepage", "step": 3, "label": "Homepage", "value": 369}, {"id": "3|Shop", "step": 3, "label": "Shop", "value": 169}, {"id": "1|Misc pages", "step": 1, "label": "Misc pages", "value": 195}, {"id": "2|Categories", "step": 2, "label": "Categories", "value": 586}, {"id": "3|Course Landing Page", "step": 3, "label": "Course Landing Page", "value": 431}, {"id": "1|Shop", "step": 1, "label": "Shop", "value": 112}, {"id": "2|Misc pages", "step": 2, "label": "Misc pages", "value": 201}, {"id": "3|Misc pages", "step": 3, "label": "Misc pages", "value": 191}], "links": [{"source": "0|Diploma in English", "target": "1|Learning Environment", "value": 7197}, {"source": "1|Learning Environment", "target": "2|Diploma in English", "value": 2074}, {"source": "2|Diploma in English", "target": "3|Learning Environment", "value": 1504}, {"source": "0|Diploma in English", "target": "1|Tag", "value": 1267}, {"source": "1|Learning Environment", "target": "2|Dashboard", "value": 591}, {"source": "2|Dashboard", "target": "3|Learning Environment", "value": 247}, {"source": "1|Learning Environment", "target": "2|Shop", "value": 551}, {"source": "2|Shop", "target": "3|Learning Environment", "value": 355}, {"source": "0|Diploma in English", "target": "1|Dashboard", "value": 600}, {"source": "1|Dashboard", "target": "2|Diploma in English", "value": 82}, {"source": "1|Learning Environment", "target": "2|Homepage", "value": 603}, {"source": "2|Homepage", "target": "3|Learning Environment", "value": 136}, {"source": "2|Diploma in English", "target": "3|Tag", "value": 284}, {"source": "0|Diploma in English", "target": "1|Others", "value": 578}, {"source": "1|Others", "target": "2|Diploma in English", "value": 170}, {"source": "2|Dashboard", "target": "3|Categories", "value": 83}, {"source": "2|Dashboard", "target": "3|Diploma in English", "value": 43}, {"source": "0|Diploma in English", "target": "1|Course Landing Page", "value": 389}, {"source": "1|Learning Environment", "target": "2|Others", "value": 179}, {"source": "2|Others", "target": "3|Learning Environment", "value": 72}, {"source": "1|Tag", "target": "2|Diploma in English", "value": 243}, {"source": "1|Learning Environment", "target": "2|Tag", "value": 212}, {"source": "2|Dashboard", "target": "3|Others", "value": 60}, {"source": "2|Homepage", "target": "3|Dashboard", "value": 69}, {"source": "2|Diploma in English", "target": "3|Others", "value": 105}, {"source": "2|Homepage", "target": "3|Categories", "value": 246}, {"source": "1|Tag", "target": "2|Course Landing Page", "value": 261}, {"source": "2|Course Landing Page", "target": "3|Learning Environment", "value": 214}, {"source": "2|Dashboard", "target": "3|Tag", "value": 55}, {"source": "2|Diploma in English", "target": "3|Categories", "value": 168}, {"source": "0|Diploma in English", "target": "1|Homepage", "value": 442}, {"source": "2|Diploma in English", "target": "3|Dashboard", "value": 65}, {"source": "2|Homepage", "target": "3|Diploma in English", "value": 32}, {"source": "2|Course Landing Page", "target": "3|Tag", "value": 104}, {"source": "1|Dashboard", "target": "2|Learning Environment", "value": 149}, {"source": "0|Diploma in English", "target": "1|Categories", "value": 785}, {"source": "1|Categories", "target": "2|Diploma in English", "value": 169}, {"source": "2|Homepage", "target": "3|Tag", "value": 131}, {"source": "1|Tag", "target": "2|Learning Environment", "value": 125}, {"source": "2|Dashboard", "target": "3|Homepage", "value": 36}, {"source": "1|Learning Environment", "target": "2|Course Landing Page", "value": 93}, {"source": "2|Diploma in English", "target": "3|Homepage", "value": 101}, {"source": "2|Diploma in English", "target": "3|Shop", "value": 43}, {"source": "2|Shop", "target": "3|Diploma in English", "value": 39}, {"source": "0|Diploma in English", "target": "1|Misc pages", "value": 195}, {"source": "2|Others", "target": "3|Homepage", "value": 56}, {"source": "1|Dashboard", "target": "2|Categories", "value": 96}, {"source": "2|Categories", "target": "3|Learning Environment", "value": 131}, {"source": "1|Tag", "target": "2|Homepage", "value": 89}, {"source": "2|Diploma in English", "target": "3|Course Landing Page", "value": 57}, {"source": "1|Course Landing Page", "target": "2|Learning Environment", "value": 101}, {"source": "0|Diploma in English", "target": "1|Shop", "value": 112}, {"source": "2|Tag", "target": "3|Learning Environment", "value": 101}, {"source": "1|Homepage", "target": "2|Diploma in English", "value": 27}, {"source": "1|Homepage", "target": "2|Categories", "value": 153}, {"source": "2|Categories", "target": "3|Course Landing Page", "value": 135}, {"source": "2|Others", "target": "3|Diploma in English", "value": 23}, {"source": "2|Learning Environment", "target": "3|Shop", "value": 81}, {"source": "1|Categories", "target": "2|Course Landing Page", "value": 177}, {"source": "1|Categories", "target": "2|Tag", "value": 99}, {"source": "2|Tag", "target": "3|Course Landing Page", "value": 118}, {"source": "2|Course Landing Page", "target": "3|Categories", "value": 86}, {"source": "1|Shop", "target": "2|Diploma in English", "value": 36}, {"source": "2|Tag", "target": "3|Homepage", "value": 24}, {"source": "2|Learning Environment", "target": "3|Course Landing Page", "value": 36}, {"source": "2|Tag", "target": "3|Diploma in English", "value": 58}, {"source": "2|Dashboard", "target": "3|Course Landing Page", "value": 20}, {"source": "1|Tag", "target": "2|Misc pages", "value": 49}, {"source": "2|Misc pages", "target": "3|Others", "value": 36}, {"source": "2|Categories", "target": "3|Diploma in English", "value": 64}, {"source": "1|Homepage", "target": "2|Tag", "value": 63}, {"source": "1|Dashboard", "target": "2|Others", "value": 54}, {"source": "2|Others", "target": "3|Dashboard", "value": 39}, {"source": "1|Homepage", "target": "2|Learning Environment", "value": 28}, {"source": "1|Learning Environment", "target": "2|Categories", "value": 101}, {"source": "1|Others", "target": "2|Learning Environment", "value": 38}, {"source": "1|Tag", "target": "2|Categories", "value": 131}, {"source": "2|Learning Environment", "target": "3|Homepage", "value": 62}, {"source": "2|Shop", "target": "3|Homepage", "value": 24}, {"source": "2|Learning Environment", "target": "3|Diploma in English", "value": 34}, {"source": "2|Dashboard", "target": "3|Misc pages", "value": 46}, {"source": "1|Others", "target": "2|Homepage", "value": 80}, {"source": "1|Dashboard", "target": "2|Tag", "value": 40}, {"source": "2|Categories", "target": "3|Tag", "value": 103}, {"source": "1|Categories", "target": "2|Homepage", "value": 56}, {"source": "2|Homepage", "target": "3|Others", "value": 59}, {"source": "2|Learning Environment", "target": "3|Dashboard", "value": 60}, {"source": "2|Tag", "target": "3|Categories", "value": 67}, {"source": "1|Dashboard", "target": "2|Misc pages", "value": 39}, {"source": "2|Misc pages", "target": "3|Categories", "value": 57}, {"source": "1|Categories", "target": "2|Learning Environment", "value": 110}, {"source": "2|Learning Environment", "target": "3|Categories", "value": 34}, {"source": "2|Learning Environment", "target": "3|Tag", "value": 28}, {"source": "1|Tag", "target": "2|Others", "value": 22}, {"source": "2|Shop", "target": "3|Others", "value": 22}, {"source": "1|Course Landing Page", "target": "2|Diploma in English", "value": 49}, {"source": "1|Dashboard", "target": "2|Homepage", "value": 31}, {"source": "1|Shop", "target": "2|Learning Environment", "value": 32}, {"source": "2|Categories", "target": "3|Homepage", "value": 36}, {"source": "1|Misc pages", "target": "2|Course Landing Page", "value": 41}, {"source": "2|Course Landing Page", "target": "3|Misc pages", "value": 23}, {"source": "2|Diploma in English", "target": "3|Misc pages", "value": 32}, {"source": "1|Homepage", "target": "2|Others", "value": 42}, {"source": "2|Homepage", "target": "3|Misc pages", "value": 20}, {"source": "1|Course Landing Page", "target": "2|Categories", "value": 48}, {"source": "1|Others", "target": "2|Dashboard", "value": 26}, {"source": "1|Course Landing Page", "target": "2|Tag", "value": 47}, {"source": "1|Course Landing Page", "target": "2|Others", "value": 21}, {"source": "1|Misc pages", "target": "2|Others", "value": 21}, {"source": "1|Others", "target": "2|Categories", "value": 31}, {"source": "1|Others", "target": "2|Tag", "value": 25}, {"source": "1|Categories", "target": "2|Misc pages", "value": 26}, {"source": "2|Others", "target": "3|Categories", "value": 34}, {"source": "1|Misc pages", "target": "2|Categories", "value": 22}, {"source": "1|Homepage", "target": "2|Dashboard", "value": 31}, {"source": "2|Course Landing Page", "target": "3|Others", "value": 22}, {"source": "2|Tag", "target": "3|Misc pages", "value": 27}, {"source": "1|Misc pages", "target": "2|Diploma in English", "value": 20}, {"source": "1|Learning Environment", "target": "2|Misc pages", "value": 36}, {"source": "1|Categories", "target": "2|Others", "value": 28}, {"source": "2|Others", "target": "3|Misc pages", "value": 20}, {"source": "2|Misc pages", "target": "3|Course Landing Page", "value": 32}, {"source": "2|Learning Environment", "target": "3|Others", "value": 24}, {"source": "1|Others", "target": "2|Misc pages", "value": 23}, {"source": "2|Course Landing Page", "target": "3|Homepage", "value": 20}], "grand_total": 16219, "no_continue": 4654, "dropped_weight": 494, "total_weight": 25893, "n_links_kept": 125, "n_links_total": 180};
+  const summary = {"total_users": 16219, "direct": 7191, "assisted": 9028, "homepage_start": 3516, "others_all": 2476, "others_pre": 1555, "others_post": 1229, "after_any": 11565, "after_none": 4654, "top_paths": [{"path": ["Diploma in English"], "users": 7191, "pct": 44.3}, {"path": ["Tag", "Diploma in English"], "users": 1682, "pct": 10.4}, {"path": ["Homepage", "Tag", "Diploma in English"], "users": 675, "pct": 4.2}, {"path": ["Homepage", "Categories", "Diploma in English"], "users": 561, "pct": 3.5}, {"path": ["Learning Environment", "Diploma in English"], "users": 289, "pct": 1.8}, {"path": ["Homepage", "Categories", "Tag", "Diploma in English"], "users": 272, "pct": 1.7}, {"path": ["Categories", "Diploma in English"], "users": 246, "pct": 1.5}, {"path": ["Others", "Diploma in English"], "users": 215, "pct": 1.3}], "next_page": [{"label": "Learning Environment", "users": 7197, "pct": 62.2}, {"label": "Tag", "users": 1267, "pct": 11.0}, {"label": "Categories", "users": 785, "pct": 6.8}, {"label": "Dashboard", "users": 600, "pct": 5.2}, {"label": "Others", "users": 578, "pct": 5.0}, {"label": "Homepage", "users": 442, "pct": 3.8}, {"label": "Course Landing Page", "users": 389, "pct": 3.4}, {"label": "Shop", "users": 112, "pct": 1.0}, {"label": "Careers", "users": 90, "pct": 0.8}, {"label": "Certificate Courses", "users": 42, "pct": 0.4}, {"label": "Diploma Courses", "users": 38, "pct": 0.3}, {"label": "Hubs", "users": 23, "pct": 0.2}, {"label": "Blog", "users": 2, "pct": 0.0}]};
+
+  const COLOR = {
+    "Homepage": "var(--c-homepage)",
+    "Categories": "var(--c-categories)",
+    "Course Landing Page": "var(--c-clp)",
+    "Tag": "var(--c-tag)",
+    "Dashboard": "var(--c-dashboard)",
+    "Shop": "var(--c-shop)",
+    "Learning Environment": "var(--c-learning)",
+    "Others": "var(--c-others)",
+    "Misc pages": "var(--misc)",
+    "Diploma in English": "var(--c-diploma)"
+  };
+  const RESOLVED = {}; // resolved hex per label, computed after paint for bar-chart fills
+
+  // ---------- Top paths table ----------
+  const pathsBody = document.getElementById('pathsBody');
+  summary.top_paths.forEach((p, i) => {
+    const tr = document.createElement('tr');
+    const rankTd = document.createElement('td');
+    rankTd.className = 'rank'; rankTd.textContent = (i+1) + '.';
+    const pathTd = document.createElement('td');
+    pathTd.className = 'path-chain';
+    pathTd.innerHTML = p.path.map(s => `<span>${s}</span>`).join('<span class="arrow">&rarr;</span>');
+    const usersTd = document.createElement('td');
+    usersTd.className = 'num'; usersTd.textContent = p.users.toLocaleString();
+    const pctTd = document.createElement('td');
+    pctTd.className = 'num'; pctTd.textContent = p.pct + '%';
+    tr.appendChild(rankTd); tr.appendChild(pathTd); tr.appendChild(usersTd); tr.appendChild(pctTd);
+    pathsBody.appendChild(tr);
+  });
+
+  // ---------- Next-page bar chart ----------
+  const barsHost = document.getElementById('nextPageBars');
+  const maxPct = Math.max(...summary.next_page.map(d => d.pct));
+  summary.next_page.slice(0, 8).forEach(d => {
+    const row = document.createElement('div');
+    row.className = 'bar-row';
+    const lbl = document.createElement('div'); lbl.className = 'bar-label'; lbl.textContent = d.label;
+    const track = document.createElement('div'); track.className = 'bar-track';
+    const fill = document.createElement('div'); fill.className = 'bar-fill';
+    fill.style.width = Math.max(d.pct / maxPct * 100, 2) + '%';
+    fill.style.background = COLOR[d.label] || 'var(--misc)';
+    track.appendChild(fill);
+    const val = document.createElement('div'); val.className = 'bar-val';
+    val.innerHTML = `<b>${d.pct}%</b> &middot; ${d.users.toLocaleString()}`;
+    row.appendChild(lbl); row.appendChild(track); row.appendChild(val);
+    barsHost.appendChild(row);
+  });
+
+  // ---------- Sankey (shared renderer, used for both charts) ----------
+  const ORDER = ["Homepage","Categories","Course Landing Page","Tag","Dashboard","Shop","Learning Environment","Others","Misc pages","Diploma in English"];
+  const svgNS = "http://www.w3.org/2000/svg";
+  const tooltip = document.getElementById('tooltip');
+  function showTip(evt, html) { tooltip.innerHTML = html; tooltip.classList.add('show'); moveTip(evt); }
+  function moveTip(evt) { tooltip.style.left = evt.clientX + 'px'; tooltip.style.top = evt.clientY + 'px'; }
+  function hideTip() { tooltip.classList.remove('show'); }
+  function colorFor(label) { return COLOR[label] || "var(--misc)"; }
+  function ribbonPath(x1,y1,x2,y2,h) {
+    const xm = (x1 + x2) / 2;
+    return `M${x1},${y1} C${xm},${y1} ${xm},${y2} ${x2},${y2} ` +
+           `L${x2},${y2+h} C${xm},${y2+h} ${xm},${y1+h} ${x1},${y1+h} Z`;
+  }
+
+  function renderSankey(opts) {
+    const { svgId, legendId, data, W, H, colLabels, leftMargin, rightMargin, stepLabel } = opts;
+    const svg = document.getElementById(svgId);
+    const marginTop = opts.marginTop || 26, marginBottom = 10;
+    const plotH = H - marginTop - marginBottom;
+    const nodeW = 16;
+    const nCols = colLabels.length;
+    const colGap = (W - leftMargin - rightMargin - nodeW) / (nCols - 1);
+    const colX = Array.from({length: nCols}, (_, i) => leftMargin + i * colGap);
+    const nodePad = 12;
+
+    const byStep = {}; for (let i=1;i<=nCols;i++) byStep[i]=[];
+    data.nodes.forEach(n => byStep[n.step - (opts.stepOffset||0)].push(n));
+    Object.values(byStep).forEach(arr => arr.sort((a,b) => ORDER.indexOf(a.label) - ORDER.indexOf(b.label)));
+
+    let maxColTotal = 0;
+    Object.values(byStep).forEach(arr => {
+      const t = arr.reduce((s,n) => s + n.value, 0);
+      if (t > maxColTotal) maxColTotal = t;
+    });
+    const scale = plotH * 0.86 / maxColTotal;
+
+    const posMap = {};
+    Object.keys(byStep).forEach(stepStr => {
+      const col = +stepStr;
+      const arr = byStep[col];
+      let y = marginTop;
+      arr.forEach(n => {
+        const h = Math.max(n.value * scale, 3);
+        posMap[n.id] = { x: colX[col-1], y, h, label: n.label, step: n.step, value: n.value };
+        y += h + nodePad;
+      });
+    });
+
+    const outOffset = {}, inOffset = {};
+    data.nodes.forEach(n => { outOffset[n.id] = 0; inOffset[n.id] = 0; });
+
+    const linkGroup = document.createElementNS(svgNS, 'g');
+    svg.appendChild(linkGroup);
+
+    data.links.forEach(l => {
+      const s = posMap[l.source], t = posMap[l.target];
+      const ribbonH = l.value * scale;
+      const y1 = s.y + outOffset[l.source];
+      const y2 = t.y + inOffset[l.target];
+      outOffset[l.source] += ribbonH;
+      inOffset[l.target] += ribbonH;
+
+      const p = document.createElementNS(svgNS, 'path');
+      p.setAttribute('d', ribbonPath(s.x + nodeW, y1, t.x, y2, ribbonH));
+      p.setAttribute('class', 'link-path');
+      p.setAttribute('fill', colorFor(s.label));
+      p.setAttribute('fill-opacity', '0.32');
+      p.addEventListener('mouseenter', (e) => {
+        p.setAttribute('fill-opacity', '0.62');
+        showTip(e, `<b>${s.label}</b> (${stepLabel(s.step)}) &rarr; <b>${t.label}</b> (${stepLabel(t.step)})<br>${l.value.toLocaleString()} user${l.value===1?'':'s'}`);
+      });
+      p.addEventListener('mousemove', moveTip);
+      p.addEventListener('mouseleave', () => { p.setAttribute('fill-opacity', '0.32'); hideTip(); });
+      linkGroup.appendChild(p);
+    });
+
+    for (let i=0;i<nCols;i++) {
+      const t = document.createElementNS(svgNS, 'text');
+      t.setAttribute('x', colX[i] + nodeW/2);
+      t.setAttribute('y', marginTop - 10);
+      t.setAttribute('text-anchor', 'middle');
+      t.setAttribute('class', 'col-label');
+      t.textContent = colLabels[i];
+      svg.appendChild(t);
+    }
+
+    const nodeGroup = document.createElementNS(svgNS, 'g');
+    svg.appendChild(nodeGroup);
+
+    data.nodes.forEach(n => {
+      const p = posMap[n.id];
+      const rect = document.createElementNS(svgNS, 'rect');
+      rect.setAttribute('x', p.x); rect.setAttribute('y', p.y);
+      rect.setAttribute('width', nodeW); rect.setAttribute('height', p.h);
+      rect.setAttribute('rx', 3);
+      rect.setAttribute('fill', colorFor(n.label));
+      rect.setAttribute('class', 'node-rect');
+      rect.addEventListener('mouseenter', (e) => {
+        showTip(e, `<b>${n.label}</b> &middot; ${stepLabel(n.step)}<br>${n.value.toLocaleString()} user${n.value===1?'':'s'}`);
+      });
+      rect.addEventListener('mousemove', moveTip);
+      rect.addEventListener('mouseleave', hideTip);
+      nodeGroup.appendChild(rect);
+
+      const isFirst = (p.x === colX[0]);
+      const label = document.createElementNS(svgNS, 'text');
+      label.setAttribute('class', 'node-label');
+      label.setAttribute('y', p.y + p.h/2 - 2);
+      if (isFirst) { label.setAttribute('x', p.x - 6); label.setAttribute('text-anchor', 'end'); }
+      else { label.setAttribute('x', p.x + nodeW + 6); label.setAttribute('text-anchor', 'start'); }
+      label.textContent = n.label;
+      nodeGroup.appendChild(label);
+
+      const val = document.createElementNS(svgNS, 'text');
+      val.setAttribute('class', 'node-value');
+      val.setAttribute('y', p.y + p.h/2 + 11);
+      val.setAttribute('x', label.getAttribute('x'));
+      val.setAttribute('text-anchor', label.getAttribute('text-anchor'));
+      val.textContent = n.value.toLocaleString();
+      if (p.h > 20) nodeGroup.appendChild(val);
+    });
+
+    const legend = document.getElementById(legendId);
+    const legendItems = ["Homepage","Categories","Course Landing Page","Tag","Dashboard","Shop","Learning Environment","Others (uncategorized)","Misc pages","Diploma in English"];
+    const legendKeys  = ["Homepage","Categories","Course Landing Page","Tag","Dashboard","Shop","Learning Environment","Others","Misc pages","Diploma in English"];
+    legendItems.forEach((txt, i) => {
+      const item = document.createElement('div'); item.className = 'legend-item';
+      const sw = document.createElement('div'); sw.className = 'legend-swatch';
+      sw.style.background = COLOR[legendKeys[i]] || 'var(--misc)';
+      item.appendChild(sw);
+      const lbl = document.createElement('span'); lbl.textContent = txt;
+      item.appendChild(lbl);
+      legend.appendChild(item);
+    });
+  }
+
+  // Chart 1: path TO conversion (steps 1-6, assisted users only)
+  renderSankey({
+    svgId: 'sankeyPre', legendId: 'legendPre', data: sankeyDataPre,
+    W: 2100, H: 620, leftMargin: 118, rightMargin: 172, marginTop: 26,
+    colLabels: ['Step 1','Step 2','Step 3','Step 4','Step 5','Step 6','Step 7','Step 8','Step 9','Step 10'],
+    stepLabel: (n) => 'Step ' + n,
+  });
+
+  // Chart 2: what happens AFTER conversion (single checkpoint, all converters)
+  renderSankey({
+    svgId: 'sankeyPost', legendId: 'legendPost', data: sankeyDataPost,
+    W: 820, H: 440, leftMargin: 168, rightMargin: 150, marginTop: 26,
+    stepOffset: -1, // data steps are 0..3, map to columns 1..4
+    colLabels: ['Reached it','+1 page','+2 pages','+3 pages'],
+    stepLabel: (n) => n === 0 ? 'reached it' : ('+' + n + (n===1?' page after':' pages after')),
+  });
+})();
+</script>
+</body>
+</html>
